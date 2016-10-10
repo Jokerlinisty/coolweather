@@ -148,7 +148,7 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
             return;
         }
         // 显示加载进度对话框
-        // showProgressDialog();
+        showProgressDialog();
         // 执行查询
         HttpUtil.sendHttpRequest(address, new HttpCallBackListener() {
             @Override
@@ -173,7 +173,7 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //closeProgressDialog(); // 关闭弹窗
+                            closeProgressDialog(); // 关闭弹窗
                             switch (type){
                                 case TYPE_PROVINCE:
                                     queryProvinces();
@@ -198,7 +198,7 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //closeProgressDialog(); // 关闭弹窗
+                        closeProgressDialog(); // 关闭弹窗
                         Toast.makeText(ChooseAreaActivity.this, "加载失败，请稍后再试。", Toast.LENGTH_SHORT).show();
                     }
                 });

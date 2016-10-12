@@ -2,7 +2,10 @@ package com.coolweather.app.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -17,24 +20,21 @@ import com.coolweather.app.db.CoolWeatherDb;
 import com.coolweather.app.model.City;
 import com.coolweather.app.model.County;
 import com.coolweather.app.model.Province;
+import com.coolweather.app.util.AddressUtil;
 import com.coolweather.app.util.HttpCallBackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChooseAreaActivity extends Activity implements AdapterView.OnItemClickListener{
 
-    public static final String TYPE_PROVINCE = "province"; // 省类型
-    public static final String TYPE_CITY = "city"; // 市类型
-    public static final String TYPE_COUNTY = "county"; // 区/县类型
-
     public static final int LEVEL_PROVINCE = 0; // 省级别
     public static final int LEVEL_CITY = 1; // 市级别
     public static final int LEVEL_COUNTY = 2; // 区级别
 
-    private ProgressDialog progressDialog; // 进度对话框
     private TextView titleText;
     private ListView listView;
     private ArrayAdapter<String> adapter;
@@ -48,9 +48,23 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
     private City selectedCity; // 选中的城市
     private int currencyLevel; // 当前选中的级别
 
+    private boolean isFromWeatherActivity; // 是否从WeatherActivity跳转过来
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+
+        // 尝试从SharedPreferences中取出城市代码
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        // 如果已选且不是从WeatherActivity跳转过来，则直接展示天气信息
+        if (pref.getBoolean("city_selected", false) && !isFromWeatherActivity){
+            Intent intent = new Intent(this, WeatherActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_choose_area);
 
@@ -69,13 +83,20 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (currencyLevel){
-            case LEVEL_PROVINCE:
+            case LEVEL_PROVINCE: // 选中省份，则查其下所有城市
                 selectedProvince = provinceList.get(position);
-                queryCities(); // 查询某省份所有城市
+                queryCities();
                 break;
-            case LEVEL_CITY:
+            case LEVEL_CITY: // 选中城市，则查其下所有县/区
                 selectedCity = cityList.get(position);
-                queryCounties(); // 查询某城市所有区/县
+                queryCounties();
+                break;
+            case LEVEL_COUNTY: // 选中县/区，则直接跳到天气活动，展示天气信息
+                String countyCode = countyList.get(position).getCountyCode();
+                Intent intent = new Intent(this, WeatherActivity.class);
+                intent.putExtra("county_code", countyCode);
+                startActivity(intent);
+                finish();
                 break;
             default:
                 break;
@@ -83,7 +104,7 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
     }
 
     /**
-     *  查询所有省份。先从数据库查，如果没有则从指定服务器获取
+     *  查询所有省份。先从数据库查，如果没有则解析本地天气城市代码
      */
     private void queryProvinces() {
         provinceList = coolWeatherDb.loadProvinces();
@@ -97,12 +118,30 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
             titleText.setText("中国");
             currencyLevel = LEVEL_PROVINCE; // 设置当前级别
         }else{
-            queryFromServer("china", TYPE_PROVINCE);
+            // 解析本地天气城市代码Json，并保存到数据库中（正常只会执行一次，就是在进入app时）
+            int result = parseAndSaveCityCodeToDB();
+            if (result > 0){ // 确保数据库操作成功且有数据，否则会造成死循环！
+                queryProvinces(); // 重新查询
+            }
         }
     }
 
     /**
-     *  查询选中省份下所有城市。先从数据库查，如果没有则从指定服务器获取
+     * 解析并保存天气城市代码到数据库中
+     */
+    private int parseAndSaveCityCodeToDB() {
+        int result = 0;
+        // 读取本地天气城市文件Json信息
+        String cityCodeJson = Utility.readCityCodeFromRaw(ChooseAreaActivity.this, R.raw.city_code, "utf-8");
+        // 解析Json并保存到数据库中
+        Utility.saveCityCodeToDB(coolWeatherDb, cityCodeJson);
+        // 这里查询下省份记录数，确保以上操作成功
+        result = coolWeatherDb.getTableCount(CoolWeatherDb.T_PROVINCE);
+        return result;
+    }
+
+    /**
+     *  查询选中省份下所有城市。先从数据库查，如果没有则解析本地天气城市代码
      */
     private void queryCities() {
         cityList = coolWeatherDb.loadCities(selectedProvince.getId());
@@ -115,13 +154,11 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
             listView.setSelection(0);
             titleText.setText(selectedProvince.getProvinceName());
             currencyLevel = LEVEL_CITY;
-        }else{
-            queryFromServer(selectedProvince.getProvinceCode(), TYPE_CITY);
         }
     }
 
     /**
-     *  查询选中城市下所有区/县。先从数据库查，如果没有则从指定服务器获取
+     *  查询选中城市下所有区/县。先从数据库查，如果没有则解析本地天气城市代码
      */
     private void queryCounties() {
         countyList = coolWeatherDb.loadCounties(selectedCity.getId());
@@ -134,126 +171,11 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
             listView.setSelection(0);
             titleText.setText(selectedCity.getCityName());
             currencyLevel = LEVEL_COUNTY;
-        }else{
-            queryFromServer(selectedCity.getCityCode(), TYPE_COUNTY);
         }
     }
 
     /**
-     * 根据省市区代码，从服务器查询相应的省市区/县数据
-     */
-    private void queryFromServer(final String code, final String type) {
-        String address = this.getAddressByType(code, type);
-        if (TextUtils.isEmpty(address)){
-            return;
-        }
-        // 显示加载进度对话框
-        showProgressDialog();
-        // 执行查询
-        HttpUtil.sendHttpRequest(address, new HttpCallBackListener() {
-            @Override
-            public void onFinish(String response) {
-                boolean result = false;
-                switch (type){
-                    case TYPE_PROVINCE:
-                        result = Utility.handleProvincesResponse(coolWeatherDb, response);
-                        break;
-                    case TYPE_CITY:
-                        result = Utility.handleCitiesResponse(coolWeatherDb, response, code, selectedProvince.getId());
-                        break;
-                    case TYPE_COUNTY:
-                        result = Utility.handleCountiesResponse(coolWeatherDb, response, code, selectedCity.getId());
-                        break;
-                    default:
-                        break;
-                }
-
-                if(result){
-                    // 通过runOnUiThread方法回到主线程
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            closeProgressDialog(); // 关闭弹窗
-                            switch (type){
-                                case TYPE_PROVINCE:
-                                    queryProvinces();
-                                    break;
-                                case TYPE_CITY:
-                                    queryCities();
-                                    break;
-                                case TYPE_COUNTY:
-                                    queryCounties();
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                // 通过runOnUiThread方法回到主线程
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        closeProgressDialog(); // 关闭弹窗
-                        Toast.makeText(ChooseAreaActivity.this, "加载失败，请稍后再试。", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
-    }
-
-    /**
-     * 根据传入省市区/县类型，返回服务器获取地址
-     */
-    private String getAddressByType(String code, String type){
-        String address = "";
-        if (TextUtils.isEmpty(code)){
-            address = "http://www.weather.com.cn/data/city3jdata/china.html";
-        }else{
-            switch (type){
-                case TYPE_PROVINCE:
-                    address = "http://www.weather.com.cn/data/city3jdata/china.html";
-                    break;
-                case TYPE_CITY:
-                    address = "http://www.weather.com.cn/data/city3jdata/provshi/" + code + ".html";
-                    break;
-                case TYPE_COUNTY:
-                    address = "http://www.weather.com.cn/data/city3jdata/station/" + code + ".html";
-                    break;
-                default:
-                    break;
-            }
-        }
-        return address;
-    }
-
-    /**
-     * 显示加载进度对话框
-     */
-    private void showProgressDialog() {
-        if (progressDialog == null){
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("正在加载...");
-            progressDialog.setCanceledOnTouchOutside(false);
-        }
-        progressDialog.show();
-    }
-
-    /**
-     * 关闭进度对话框
-     */
-    private void closeProgressDialog() {
-        if (progressDialog != null){
-            progressDialog.dismiss();
-        }
-    }
-
-    /**
-     * 补货Back按键，根据当前级别，此时应该返回省、市、区还是直接退出
+     * 捕获Back按键，根据当前级别，此时应该返回省、市、区还是直接退出
      */
     @Override
     public void onBackPressed() {
@@ -262,6 +184,10 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
         }else if(currencyLevel == LEVEL_CITY){
             queryProvinces();
         }else{
+            if (isFromWeatherActivity){ // 如果从跳转WeatherActivity过来，则原路返回
+                Intent intent = new Intent(this, WeatherActivity.class);
+                startActivity(intent);
+            }
             finish();
         }
     }

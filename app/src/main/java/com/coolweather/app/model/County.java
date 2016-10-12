@@ -10,6 +10,15 @@ public class County {
 	private String countyCode; // 县份代码
 	private int cityId; // 城市id
 
+	public County() {
+	}
+
+	public County(String countyName, String countyCode, int cityId) {
+		this.countyName = countyName;
+		this.countyCode = countyCode;
+		this.cityId = cityId;
+	}
+
 	public int getId() {
 		return id;
 	}

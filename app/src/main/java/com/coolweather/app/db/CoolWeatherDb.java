@@ -45,15 +45,41 @@ public class CoolWeatherDb {
     }
 
     /**
+     * 获取db实例
+     */
+    public SQLiteDatabase getDb() {
+        return db;
+    }
+
+    /**
+     * 清空指定表数据
+     */
+    public void cleanTableData(String[] tableNames){
+        for (String tableName : tableNames){
+            db.delete(tableName, null, null);
+        }
+    }
+
+    /**
+     * 查询指定表的记录数
+     */
+    public int getTableCount(String tableName){
+        Cursor cursor = db.rawQuery("select count(*) from " + tableName, null);
+        cursor.moveToFirst();
+        return (int) cursor.getLong(0);
+    }
+
+
+    /**
     *  新增省份
     */
-    public void saveProvince(Province province){
+    public long saveProvince(Province province){
         if (province != null){
             ContentValues contentValues = new ContentValues();
             contentValues.put("province_name", province.getProvinceName());
-            contentValues.put("province_code", province.getProvinceCode());
-            db.insert(T_PROVINCE, null, contentValues);
+            return db.insert(T_PROVINCE, null, contentValues);
         }
+        return -1;
     }
 
     /**
@@ -68,7 +94,6 @@ public class CoolWeatherDb {
                 province = new Province();
                 province.setId(cursor.getInt(cursor.getColumnIndex("id")));
                 province.setProvinceName(cursor.getString(cursor.getColumnIndex("province_name")));
-                province.setProvinceCode(cursor.getString(cursor.getColumnIndex("province_code")));
                 list.add(province);
             }while (cursor.moveToNext());
         }
@@ -78,14 +103,14 @@ public class CoolWeatherDb {
     /**
      *  新增城市
      */
-    public void saveCity(City city){
+    public long saveCity(City city){
         if (city != null){
             ContentValues contentValues = new ContentValues();
             contentValues.put("city_name", city.getCityName());
-            contentValues.put("city_code", city.getCityCode());
             contentValues.put("province_id", city.getProvinceId());
-            db.insert(T_CITY, null, contentValues);
+            return db.insert(T_CITY, null, contentValues);
         }
+        return -1;
     }
 
     /**
@@ -100,7 +125,6 @@ public class CoolWeatherDb {
                 city = new City();
                 city.setId(cursor.getInt(cursor.getColumnIndex("id")));
                 city.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
-                city.setCityCode(cursor.getString(cursor.getColumnIndex("city_code")));
                 city.setProvinceId(provinceId);
                 list.add(city);
             }while (cursor.moveToNext());
@@ -111,14 +135,15 @@ public class CoolWeatherDb {
     /**
      *  新增县份
      */
-    public void saveCounty(County county){
+    public long saveCounty(County county){
         if (county != null){
             ContentValues contentValues = new ContentValues();
             contentValues.put("county_name", county.getCountyName());
             contentValues.put("county_code", county.getCountyCode());
             contentValues.put("city_id", county.getCityId());
-            db.insert(T_COUNTY, null, contentValues);
+            return db.insert(T_COUNTY, null, contentValues);
         }
+        return -1;
     }
 
     /**

@@ -8,7 +8,13 @@ public class Province {
 
     private int id; // 主键，自增
     private String provinceName; // 省份名称
-    private String provinceCode; // 省份代码
+
+    public Province() {
+    }
+
+    public Province(String provinceName) {
+        this.provinceName = provinceName;
+    }
 
     public int getId() {
         return id;
@@ -26,16 +32,8 @@ public class Province {
         this.provinceName = provinceName;
     }
 
-    public String getProvinceCode() {
-        return provinceCode;
-    }
-
-    public void setProvinceCode(String provinceCode) {
-        this.provinceCode = provinceCode;
-    }
-
     @Override
     public String toString() {
-        return "Province{" + "id=" + id + ", provinceName='" + provinceName + '\'' + ", provinceCode='" + provinceCode + '\'' + '}';
+        return "Province{" + "id=" + id + ", provinceName='" + provinceName + '\'' + '}';
     }
 }

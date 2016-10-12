@@ -7,8 +7,15 @@ public class City {
 
 	private int id; // 主键，自增
 	private String cityName; // 城市名称
-	private String cityCode; // 城市代码
 	private int provinceId;  // 省份id
+
+	public City() {
+	}
+
+	public City(String cityName, int provinceId) {
+		this.cityName = cityName;
+		this.provinceId = provinceId;
+	}
 
 	public int getId() {
 		return id;
@@ -26,14 +33,6 @@ public class City {
 		this.cityName = cityName;
 	}
 
-	public String getCityCode() {
-		return cityCode;
-	}
-
-	public void setCityCode(String cityCode) {
-		this.cityCode = cityCode;
-	}
-
 	public int getProvinceId() {
 		return provinceId;
 	}
@@ -44,6 +43,6 @@ public class City {
 
 	@Override
 	public String toString() {
-		return "City{" + "id=" + id + ", cityName='" + cityName + '\'' + ", cityCode='" + cityCode + '\'' + ", provinceId=" + provinceId + '}';
+		return "City{" + "id=" + id + ", cityName='" + cityName + '\'' + ", provinceId=" + provinceId + '}';
 	}
 }

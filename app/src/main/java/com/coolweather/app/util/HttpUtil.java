@@ -1,5 +1,8 @@
 package com.coolweather.app.util;
 
+import android.os.Build;
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,23 +23,29 @@ public class HttpUtil {
                     URL url = new URL(address);
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
-                    conn.setRequestProperty("contentType", "UTF-8");
+                    conn.setRequestProperty("contentType", "utf-8");
+                    conn.setRequestProperty("Accept-Encoding", "identity");
                     conn.setConnectTimeout(8000);
                     conn.setReadTimeout(8000);
 
-                    InputStream in = conn.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null){
-                        response.append(line);
-                    }
+                    // 处理返回数据
+                    if (conn.getResponseCode() == 200){
+                        InputStream fis = conn.getInputStream();
+                        StringBuilder response = new StringBuilder();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"));
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            response.append(line);
+                        }
 
-                    // 回调onFinish方法
-                    if (listener != null){
-                        listener.onFinish(response.toString());
+                        // 回调onFinish方法
+                        if (listener != null){
+                            listener.onFinish(response.toString());
+                        }
                     }
                 }catch (Exception e){
+                    Log.e("HttpUtil", "HttpUtil-->sendHttpRequest() failed, caused by: " + e.toString(), e);
+                    e.printStackTrace();
                     // 回调onFinish方法
                     if (listener != null){
                         listener.onError(e);

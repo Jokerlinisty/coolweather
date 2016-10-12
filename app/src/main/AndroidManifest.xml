@@ -19,7 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.WeatherActivity"></activity>
+        <activity android:name=".activity.WeatherActivity"></activity> // 天气界面活动
+        <service android:name=".activity.AutoUpdateService"/> // 自动更新天气服务
+        <receiver android:name=".receiver.AutoUpdateReceiver"/> // 自动更新天气广播接收器
     </application>
 
 </manifest>

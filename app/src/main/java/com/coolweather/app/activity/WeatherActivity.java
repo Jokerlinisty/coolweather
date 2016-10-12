@@ -124,6 +124,10 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
         currentDateText.setText(prefs.getString("current_date", ""));
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
+
+        // 成功显示天气后，激活AutoUpdateService服务，定时更新天气信息
+        Intent i = new Intent(this, AutoUpdateService.class);
+        startService(i);
     }
 
     @Override

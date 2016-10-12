@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background" >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#4876FF" >
-
+        android:layout_height="50dp">
+        <!--android:background="#4876FF"-->
         <Button
             android:id="@+id/switch_city"
             android:layout_width="30dp"
@@ -36,12 +36,9 @@
             android:background="@drawable/refresh">
         </Button>
     </RelativeLayout>
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#27A5F9" >
+        android:layout_height="50dp">
 
         <TextView
             android:id="@+id/publish_text"
@@ -53,6 +50,12 @@
             android:textColor="#FFF"
             android:textSize="18sp">
         </TextView>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <!--android:background="#27A5F9"-->
         <LinearLayout
             android:id="@+id/weather_info_layout"
             android:layout_width="wrap_content"
@@ -81,7 +84,7 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:orientation="horizontal" >
 
@@ -113,6 +116,170 @@
                     android:textColor="#FFF"
                     android:textSize="40sp">
                 </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="bottom"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/day01"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="16sp"
+                        android:text="11日\n星期一">
+                    </TextView>
+                    <TextView
+                        android:id="@+id/temp01"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="20sp"
+                        android:text="22°\n10°">
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="bottom"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/day02"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="16sp"
+                        android:text="12日\n星期二">
+                    </TextView>
+                    <TextView
+                        android:id="@+id/temp02"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="20sp"
+                        android:text="22°\n10°">
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="bottom"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/day03"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="16sp"
+                        android:text="13日\n星期三">
+                    </TextView>
+                    <TextView
+                        android:id="@+id/temp03"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="20sp"
+                        android:text="22°\n10°">
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="bottom"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/day04"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="16sp"
+                        android:text="14日\n星期四">
+                    </TextView>
+                    <TextView
+                        android:id="@+id/temp04"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="20sp"
+                        android:text="22°\n10°">
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="bottom"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/day05"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="16sp"
+                        android:text="15日\n星期五">
+                    </TextView>
+                    <TextView
+                        android:id="@+id/temp05"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="20sp"
+                        android:text="22°\n10°">
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="bottom"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/day06"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="16sp"
+                        android:text="16日\n星期六">
+                    </TextView>
+                    <TextView
+                        android:id="@+id/temp06"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="#FFF"
+                        android:textSize="20sp"
+                        android:text="22°\n10°">
+                    </TextView>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

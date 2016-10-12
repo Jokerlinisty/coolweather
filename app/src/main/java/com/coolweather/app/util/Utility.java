@@ -173,7 +173,7 @@ public class Utility {
         editor.putString("high_temp", weatherInfo.getHighTemp());
         editor.putString("weather", weatherInfo.getWeather());
         editor.putString("publish_time", weatherInfo.getPublishTime());
-        editor.putString("current_date", new SimpleDateFormat("yyyy年M月d日", Locale.CHINA).format(new Date()));
+        editor.putString("current_date", new SimpleDateFormat("yyyy年M月d日 EEEE", Locale.CHINA).format(new Date()));
         editor.putBoolean("city_selected", weatherInfo.isCitySelected());
         editor.commit();
     }

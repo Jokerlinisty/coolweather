@@ -48,7 +48,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
             android:textColor="#FFF"
-            android:textSize="18sp">
+            android:textSize="14sp">
         </TextView>
     </RelativeLayout>
     <RelativeLayout
@@ -81,7 +81,14 @@
                 android:textColor="#FFF"
                 android:textSize="40sp" >
             </TextView>
-
+            <TextView
+                android:id="@+id/curr_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#FFF"
+                android:textSize="40sp">
+            </TextView>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -94,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:textColor="#FFF"
-                    android:textSize="40sp">
+                    android:textSize="30sp">
                 </TextView>
 
                 <TextView
@@ -114,13 +121,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:textColor="#FFF"
-                    android:textSize="40sp">
+                    android:textSize="30sp">
                 </TextView>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
+                android:layout_height="180dp"
                 android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
 
@@ -132,22 +139,20 @@
                     android:gravity="bottom"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/day01"
+                        android:id="@+id/day_1"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="16sp"
-                        android:text="11日\n星期一">
+                        android:textSize="16sp">
                     </TextView>
                     <TextView
-                        android:id="@+id/temp01"
+                        android:id="@+id/temp_1"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="20sp"
-                        android:text="22°\n10°">
+                        android:textSize="18sp">
                     </TextView>
                 </LinearLayout>
                 <LinearLayout
@@ -158,22 +163,20 @@
                     android:gravity="bottom"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/day02"
+                        android:id="@+id/day_2"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="16sp"
-                        android:text="12日\n星期二">
+                        android:textSize="16sp">
                     </TextView>
                     <TextView
-                        android:id="@+id/temp02"
+                        android:id="@+id/temp_2"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="20sp"
-                        android:text="22°\n10°">
+                        android:textSize="18sp">
                     </TextView>
                 </LinearLayout>
                 <LinearLayout
@@ -184,22 +187,20 @@
                     android:gravity="bottom"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/day03"
+                        android:id="@+id/day_3"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="16sp"
-                        android:text="13日\n星期三">
+                        android:textSize="16sp">
                     </TextView>
                     <TextView
-                        android:id="@+id/temp03"
+                        android:id="@+id/temp_3"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="20sp"
-                        android:text="22°\n10°">
+                        android:textSize="18sp">
                     </TextView>
                 </LinearLayout>
                 <LinearLayout
@@ -210,22 +211,20 @@
                     android:gravity="bottom"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/day04"
+                        android:id="@+id/day_4"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="16sp"
-                        android:text="14日\n星期四">
+                        android:textSize="16sp">
                     </TextView>
                     <TextView
-                        android:id="@+id/temp04"
+                        android:id="@+id/temp_4"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="20sp"
-                        android:text="22°\n10°">
+                        android:textSize="18sp">
                     </TextView>
                 </LinearLayout>
                 <LinearLayout
@@ -236,22 +235,20 @@
                     android:gravity="bottom"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/day05"
+                        android:id="@+id/day_5"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="16sp"
-                        android:text="15日\n星期五">
+                        android:textSize="16sp">
                     </TextView>
                     <TextView
-                        android:id="@+id/temp05"
+                        android:id="@+id/temp_5"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="20sp"
-                        android:text="22°\n10°">
+                        android:textSize="18sp">
                     </TextView>
                 </LinearLayout>
                 <LinearLayout
@@ -262,25 +259,35 @@
                     android:gravity="bottom"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/day06"
+                        android:id="@+id/day_6"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="16sp"
-                        android:text="16日\n星期六">
+                        android:textSize="16sp">
                     </TextView>
                     <TextView
-                        android:id="@+id/temp06"
+                        android:id="@+id/temp_6"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:gravity="center_horizontal"
                         android:textColor="#FFF"
-                        android:textSize="20sp"
-                        android:text="22°\n10°">
+                        android:textSize="18sp">
                     </TextView>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/health"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:textColor="#FFF"
+            android:textSize="14sp">
+        </TextView>
     </RelativeLayout>
 </LinearLayout>

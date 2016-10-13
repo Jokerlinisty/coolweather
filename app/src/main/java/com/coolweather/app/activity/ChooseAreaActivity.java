@@ -55,9 +55,8 @@ public class ChooseAreaActivity extends Activity implements AdapterView.OnItemCl
         super.onCreate(savedInstanceState);
         isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
 
-        // 尝试从SharedPreferences中取出城市代码
+        // 读取SharedPreferences中的city_selected，如果已选且不是从WeatherActivity跳转过来，则展示已保存的天气信息
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        // 如果已选且不是从WeatherActivity跳转过来，则直接展示天气信息
         if (pref.getBoolean("city_selected", false) && !isFromWeatherActivity){
             Intent intent = new Intent(this, WeatherActivity.class);
             startActivity(intent);

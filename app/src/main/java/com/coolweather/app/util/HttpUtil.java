@@ -1,6 +1,5 @@
 package com.coolweather.app.util;
 
-import android.os.Build;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -24,7 +23,6 @@ public class HttpUtil {
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
                     conn.setRequestProperty("contentType", "utf-8");
-                    conn.setRequestProperty("Accept-Encoding", "identity");
                     conn.setConnectTimeout(8000);
                     conn.setReadTimeout(8000);
 

@@ -8,7 +8,7 @@ import android.text.TextUtils;
  */
 public class AddressUtil {
     public static final String TYPE_WEATHER = "weather"; // 天气类型（返回天气信息）
-    public static final String DEFAULT_CITY_CODE = "101010100"; // 天气类型（返回天气信息）
+    public static final String DEFAULT_CITY_CODE = "101010100"; // 默认城市：北京
 
     /**
      * 根据类型，返回对应服务器地址
@@ -18,9 +18,10 @@ public class AddressUtil {
         switch (type){
             case TYPE_WEATHER:
                 if (TextUtils.isEmpty(code)){
-                    code = DEFAULT_CITY_CODE; // 不存在，则默认显示北京天气
+                    code = DEFAULT_CITY_CODE; // 不存在，则默认城市天气
                 }
-                address = "http://www.weather.com.cn/data/cityinfo/" + code + ".html";
+                // address = "http://www.weather.com.cn/data/cityinfo/" + code + ".html";
+                address = "http://wthrcdn.etouch.cn/weather_mini?citykey=" + code.trim();
             break;
             default:
                 break;

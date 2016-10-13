@@ -15,6 +15,7 @@ import com.coolweather.app.model.City;
 import com.coolweather.app.model.County;
 import com.coolweather.app.model.Province;
 import com.coolweather.app.vo.WeatherInfo;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,8 +34,10 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.prefs.PreferencesFactory;
 
@@ -131,28 +134,64 @@ public class Utility {
     }
 
     /**
-     * 解析服务器返回的天气信息JSON数据，并保存到本地
-     * 数据格式：{"weatherinfo":{"city":"北京","cityid":"101010100","temp1":"-2℃","temp2":"16℃","weather":"晴","img1":"n0.gif","img2":"d0.gif","ptime":"18:00"}}
+     * 解析服务器返回的天气信息JSON数据（最近7天），并保存到本地
+     * 数据格式：{"desc":"OK","status":1000,"data":{"wendu":"23","ganmao":"各项气象条件适宜，无明显降温过程，发生感冒机率较低。",
+     * "forecast":[{"fengxiang":"无持续风向","fengli":"微风级","high":"高温 29℃","type":"多云","low":"低温 22℃","date":"13日星期四"}],
+     * "yesterday":{"fl":"3-4级","fx":"北风","high":"高温 25℃","type":"小到中雨","low":"低温 20℃","date":"12日星期三"},"aqi":"27","city":"广州"}}
      */
-    public static void handleWeatherResponse(Context context, String response){
+    public static void handleWeatherResponse(Context context, String weatherCode, String response){
         if (TextUtils.isEmpty(response)){
             return;
         }
         try {
             // 解析Json数据
             JSONObject responseJson = new JSONObject(response);
-            JSONObject weatherInfoJson = responseJson.optJSONObject("weatherinfo");
-            WeatherInfo weatherInfo = new WeatherInfo();
-            weatherInfo.setCityName(weatherInfoJson.getString("city"));
-            weatherInfo.setWeatherCode(weatherInfoJson.getString("cityid"));
-            weatherInfo.setLowTemp(weatherInfoJson.getString("temp1"));
-            weatherInfo.setHighTemp(weatherInfoJson.getString("temp2"));
-            weatherInfo.setWeather(weatherInfoJson.getString("weather"));
-            weatherInfo.setPublishTime(weatherInfoJson.getString("ptime"));
-            weatherInfo.setCitySelected(true);
+            int status = responseJson.getInt("status");
+            if(status != 1000){
+                return;
+            }
+            // 保存最近7天天气信息
+            List<WeatherInfo> weatherList = new ArrayList<>();
+            JSONObject data = responseJson.optJSONObject("data");
+            String cityName = data.getString("city");  // 城市名称
+            String currTemp = data.getString("wendu") + "℃";  // 实时温度
+            String health = data.getString("ganmao");// 健康提示
 
+            JSONObject yesterday = data.optJSONObject("yesterday"); // 昨天天气
+            WeatherInfo yesterdayWeather = new WeatherInfo();
+            yesterdayWeather.setLowTemp(yesterday.getString("low"));
+            yesterdayWeather.setHighTemp(yesterday.getString("high"));
+            yesterdayWeather.setWeather(yesterday.getString("type")); // 天气状况（晴、多云、小雨等）
+            yesterdayWeather.setDate(yesterday.getString("date"));
+            yesterdayWeather.setCitySelected(true);
+            weatherList.add(yesterdayWeather);
+
+            // 注意：以下列表第一条数据表示当天天气
+            JSONArray forecast = data.optJSONArray("forecast");
+            if (forecast != null){
+                WeatherInfo weatherInfo = null;
+                for (int i=0; i< forecast.length(); i++){
+                    JSONObject weatherObj = forecast.optJSONObject(i);
+                    if (weatherObj == null){
+                        continue;
+                    }
+                    weatherInfo = new WeatherInfo();
+                    weatherInfo.setCityName(cityName);
+                    weatherInfo.setWeatherCode(weatherCode);
+                    if (i == 0){ // 当天，则设置实时温度及健康提示
+                        weatherInfo.setCurrTemp(currTemp);
+                        weatherInfo.setHealth(health);
+                    }
+                    weatherInfo.setLowTemp(weatherObj.getString("low"));
+                    weatherInfo.setHighTemp(weatherObj.getString("high"));
+                    weatherInfo.setWeather(weatherObj.getString("type"));
+                    weatherInfo.setDate(weatherObj.getString("date"));
+                    weatherList.add(weatherInfo);
+                }
+            }
+            Log.i("Utility", "success to get weatherInfo from HttpResponse, response=" + response);
             // 保存天气信息
-            saveWeatherInfo(context, weatherInfo);
+            saveWeatherInfo(context, weatherList);
         } catch (JSONException e) {
             Log.e("Utility", "failed to convert "+ response +" to JSONObject! caused by: " + e.toString(), e);
             e.printStackTrace();
@@ -162,19 +201,28 @@ public class Utility {
     /**
      * 将服务器返回的所有天气信息存储到SharedPreferences文件中。
      */
-    public static void saveWeatherInfo(Context context, WeatherInfo weatherInfo){
-        if (weatherInfo == null){
+    public static void saveWeatherInfo(Context context, List<WeatherInfo> weatherList){
+        if (weatherList == null && weatherList.size() < 1){
             return;
         }
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        editor.putString("city_name", weatherInfo.getCityName());
-        editor.putString("weather_code", weatherInfo.getWeatherCode());
-        editor.putString("low_temp", weatherInfo.getLowTemp());
-        editor.putString("high_temp", weatherInfo.getHighTemp());
-        editor.putString("weather", weatherInfo.getWeather());
-        editor.putString("publish_time", weatherInfo.getPublishTime());
+        // 当天天气(单独保存一份)
+        WeatherInfo todayWeather = weatherList.get(1); // 取第二条数据
+        editor.putString("city_name", todayWeather.getCityName());
+        editor.putString("weather_code", todayWeather.getWeatherCode());
+        editor.putString("curr_temp", todayWeather.getCurrTemp());
+        editor.putString("low_temp", todayWeather.getLowTemp());
+        editor.putString("high_temp", todayWeather.getHighTemp());
+        editor.putString("weather", todayWeather.getWeather());
+        editor.putString("health", todayWeather.getHealth());
         editor.putString("current_date", new SimpleDateFormat("yyyy年M月d日 EEEE", Locale.CHINA).format(new Date()));
-        editor.putBoolean("city_selected", weatherInfo.isCitySelected());
+        editor.putBoolean("city_selected", true); // 已保存标志位（必须，用于下次进入时，直接加载上次选中的城市天气）
+        editor.putString("update_time", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
+
+        // 最近N天天气信息
+        Gson gson = new Gson();
+        String weatherInfoJson = gson.toJson(weatherList); // 将List转为Json
+        editor.putString("weatherInfo", weatherInfoJson);
         editor.commit();
     }
 }

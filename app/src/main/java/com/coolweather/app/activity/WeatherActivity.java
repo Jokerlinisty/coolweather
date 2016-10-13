@@ -39,6 +39,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
     private TextView currentDateText; // 当前日期
 
     private TextView dayText1, dayText2, dayText3, dayText4, dayText5, dayText6; // 日期Text（其中dayText1=昨天，dayText2=今天。依次...）
+    private TextView weather1, weather2, weather3, weather4, weather5, weather6; // 天气Text（weather1=昨天，weather2=今天。依次...）
     private TextView tempText1, tempText2, tempText3, tempText4, tempText5, tempText6; // 温度Text（tempText1=昨天，tempText2=今天。依次...）
 
     private Button switchCity; // 却换城市按钮
@@ -62,12 +63,20 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
         publishText = (TextView) findViewById(R.id.publish_text);
         currentDateText = (TextView) findViewById(R.id.current_date);
 
+        weather1 = (TextView) findViewById(R.id.weather_1);
+        weather2 = (TextView) findViewById(R.id.weather_2);
+        weather3 = (TextView) findViewById(R.id.weather_3);
+        weather4 = (TextView) findViewById(R.id.weather_4);
+        weather5 = (TextView) findViewById(R.id.weather_5);
+        weather6 = (TextView) findViewById(R.id.weather_6);
+
         dayText1 = (TextView) findViewById(R.id.day_1);
         dayText2 = (TextView) findViewById(R.id.day_2);
         dayText3 = (TextView) findViewById(R.id.day_3);
         dayText4 = (TextView) findViewById(R.id.day_4);
         dayText5 = (TextView) findViewById(R.id.day_5);
         dayText6 = (TextView) findViewById(R.id.day_6);
+
         tempText1 = (TextView) findViewById(R.id.temp_1);
         tempText2 = (TextView) findViewById(R.id.temp_2);
         tempText3 = (TextView) findViewById(R.id.temp_3);
@@ -161,52 +170,59 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
         publishText.setText("已更新 " + prefs.getString("update_time", ""));
 
         // 最近N天天气
-        String weatherInfo = prefs.getString("weatherInfo", "");
-        if (!TextUtils.isEmpty(weatherInfo)){
+        String weatherInfoJson = prefs.getString("weatherInfo", "");
+        if (!TextUtils.isEmpty(weatherInfoJson)){
             // 使用Gson重新解析出天气信息
             Gson gson = new Gson();
             Type listType = new TypeToken<ArrayList<WeatherInfo>>(){}.getType();
-            List<WeatherInfo> weatherInfoList = gson.fromJson(weatherInfo, listType);
+            List<WeatherInfo> weatherInfoList = gson.fromJson(weatherInfoJson, listType);
             if (weatherInfoList != null && weatherInfoList.size() > 0){
-                WeatherInfo weather = null;
+                WeatherInfo weatherInfo = null;
                 for (int i =0; i< weatherInfoList.size(); i++){
-                    weather = weatherInfoList.get(i);
-                    String low = weather.getLowTemp();
+                    weatherInfo = weatherInfoList.get(i);
+                    String weather = weatherInfo.getWeather(); // 天气
+                    String low = weatherInfo.getLowTemp(); // 最低温
                     if (!TextUtils.isEmpty(low)){
                         low = low.substring(low.length()-3);
                     }
-                    String high = weather.getHighTemp();
+                    String high = weatherInfo.getHighTemp(); // 最高温
                     if (!TextUtils.isEmpty(high)){
                         high = high.substring(high.length()-3);
                     }
-                    String date = weather.getDate(); // 返回: 12日星期三，这里需要加个换行
+                    String date = weatherInfo.getDate(); // 日期。返回: 12日星期三，这里需要加个换行
                     if (!TextUtils.isEmpty(date)){
                         date = date.substring(0, 3) +"\n" + date.substring(date.length()-3);
                     }
                     switch (i+1){
                         case 1:
-                            tempText1.setText(high + "\n" + low);
                             dayText1.setText(date);
+                            weather1.setText(weather);
+                            tempText1.setText(high + "\n" + low);
                             break;
                         case 2:
-                            tempText2.setText(high + "\n" + low);
                             dayText2.setText(date);
+                            weather2.setText(weather);
+                            tempText2.setText(high + "\n" + low);
                             break;
                         case 3:
-                            tempText3.setText(high + "\n" + low);
                             dayText3.setText(date);
+                            weather3.setText(weather);
+                            tempText3.setText(high + "\n" + low);
                             break;
                         case 4:
-                            tempText4.setText(high + "\n" + low);
                             dayText4.setText(date);
+                            weather4.setText(weather);
+                            tempText4.setText(high + "\n" + low);
                             break;
                         case 5:
-                            tempText5.setText(high + "\n" + low);
                             dayText5.setText(date);
+                            weather5.setText(weather);
+                            tempText5.setText(high + "\n" + low);
                             break;
                         case 6:
-                            tempText6.setText(high + "\n" + low);
                             dayText6.setText(date);
+                            weather6.setText(weather);
+                            tempText6.setText(high + "\n" + low);
                             break;
                         default:
                             break;

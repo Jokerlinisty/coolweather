@@ -24,4 +24,13 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile files('libs/gson-2.2.3.jar')
+    compile files('libs/MobCommons-2016.1102.1128.jar')
+    compile files('libs/MobTools-2016.1102.1128.jar')
+    compile files('libs/ShareSDK-Core-2.7.9.jar')
+    compile files('libs/ShareSDK-QQ-2.7.9.jar')
+    compile files('libs/ShareSDK-QZone-2.7.9.jar')
+    compile files('libs/ShareSDK-SinaWeibo-2.7.9.jar')
+    compile files('libs/ShareSDK-Wechat-2.7.9.jar')
+    compile files('libs/ShareSDK-Wechat-Core-2.7.9.jar')
+    compile files('libs/ShareSDK-Wechat-Moments-2.7.9.jar')
 }

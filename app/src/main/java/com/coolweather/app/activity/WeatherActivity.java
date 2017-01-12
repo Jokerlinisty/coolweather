@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.coolweather.app.R;
 import com.coolweather.app.util.AddressUtil;
@@ -25,6 +27,9 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 public class WeatherActivity extends Activity implements View.OnClickListener{
 
@@ -45,12 +50,16 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
     private Button switchCity; // 却换城市按钮
     private Button refreshWeather; // 更新天气按钮
     private String countyCode; // 当前县区代码
+    private Button shareBtn; // 分享按钮
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_weather);
+
+        // 分享功能初始化
+        ShareSDK.initSDK(this,"18a2f312e3b05");
 
         // 初始化各种控件
         weatherInfoLayout= (LinearLayout) findViewById(R.id.weather_info_layout);
@@ -87,8 +96,10 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
         // 切换城市及刷新天气按钮
         switchCity = (Button) findViewById(R.id.switch_city);
         refreshWeather = (Button) findViewById(R.id.refresh_weather);
+        shareBtn = (Button) findViewById(R.id.share); // 分享
         switchCity.setOnClickListener(this);
         refreshWeather.setOnClickListener(this);
+        shareBtn.setOnClickListener(this);
 
         // 县/区代码（只在选中县/区时，传过来）
         countyCode = getIntent().getStringExtra("county_code");
@@ -256,8 +267,41 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
                 // 根据县/区代码，查询天气信息
                 queryWeatherFromServer(weatherCode, AddressUtil.TYPE_WEATHER);
                 break;
+            case R.id.share:
+                this.showShare();
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 分享
+     */
+    private void showShare() {
+        ShareSDK.initSDK(this);
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+
+        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间等使用
+        oks.setTitle("不是说下班给我吗？");
+        // titleUrl是标题的网络链接，QQ和QQ空间等使用
+        oks.setTitleUrl("http://www.yy.com");
+        // text是分享文本，所有平台都需要这个字段
+        oks.setText("我还没下班。。");
+        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+        Log.d("WeatherActivity", Environment.getExternalStorageDirectory().toString());
+        oks.setImagePath(Environment.getExternalStorageDirectory() + "/share.jpg");//确保SDcard下面存在此张图片
+        // url仅在微信（包括好友和朋友圈）中使用
+        oks.setUrl("http://www.yy.com");
+        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+        oks.setComment("这是一个悲伤的故事");
+        // site是分享此内容的网站名称，仅在QQ空间使用
+        oks.setSite(getString(R.string.app_name));
+        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+        oks.setSiteUrl("http://www.yy.com");
+        // 启动分享GUI
+        oks.show(this);
     }
 }
